@@ -9,14 +9,19 @@ namespace Feedback_Service.Controllers;
 [Route("feedback")]
 public class FeedbackController : ControllerBase
 {
-    private readonly FeedbackEntriesRepository feedbackEntriesRepository = new();
+    private readonly IFeedbackEntriesRepository feedbackEntriesRepository;
+
+    public FeedbackController(IFeedbackEntriesRepository feedbackEntriesRepository)
+    {
+        this.feedbackEntriesRepository = feedbackEntriesRepository;
+    }
 
     //GET /feedback
     // retrieves all feedback entries
     [HttpGet]
-    public async Task<IEnumerable<FeedbackEntryDto>> GetAsync()
+    public async Task<IEnumerable<FeedbackEntryDto>> Get()
     {
-        var feedbackEntries = (await feedbackEntriesRepository.GetAllAsync())
+        var feedbackEntries = (await feedbackEntriesRepository.GetAll())
                                 .Select(feedbackEntry => feedbackEntry.AsDto());
         return feedbackEntries;
     }
@@ -24,9 +29,9 @@ public class FeedbackController : ControllerBase
     //GET /feedback/{id}
     // retrieves a specific feedback
     [HttpGet("{id}")]
-    public async Task<ActionResult<FeedbackEntryDto>> GetFeedbackEntryByIdAsync(Guid id)
+    public async Task<ActionResult<FeedbackEntryDto>> GetFeedbackEntryById(Guid id)
     {
-        var feedbackEntry = await feedbackEntriesRepository.GetAsync(id);
+        var feedbackEntry = await feedbackEntriesRepository.Get(id);
 
         if (feedbackEntry == null)
         {
@@ -38,9 +43,9 @@ public class FeedbackController : ControllerBase
     //GET /feedback/patient/{patientId}
     // retrieves all feedback entries based on a patient id
     [HttpGet("patient/{patientId}")]
-    public async Task<IEnumerable<FeedbackEntryDto>> GetPatientFeedbackEntryByIdAsync(int patientId)
+    public async Task<IEnumerable<FeedbackEntryDto>> GetPatientFeedbackEntryById(int patientId)
     {
-        var feedbackEntries = (await feedbackEntriesRepository.GetPatientFeedbacksAsync(patientId))
+        var feedbackEntries = (await feedbackEntriesRepository.GetPatientFeedbacks(patientId))
                             .Select(feedbackEntry => feedbackEntry.AsDto());
 
         System.Diagnostics.Debug.WriteLine(feedbackEntries);
@@ -50,20 +55,11 @@ public class FeedbackController : ControllerBase
     //POST /feedback
     // created a feedback entry
     [HttpPost]
-    public async Task<ActionResult<FeedbackEntryDto>> PostAsync(CreateFeedbackEntryDto createFeedbackEntryDto)
+    public async Task<ActionResult<FeedbackEntryDto>> Post(CreateFeedbackEntryDto createFeedbackEntryDto)
     {
-        // NEEDS TO BE UPDATED WITH PATIENT DATA
-        // Instead of using feedbackEntries can use Patient data to check if the user exist where a feedback has been made for.
-        // var existingPatientFeedbackEntry = feedbackEntries.Where(feedbackEntry => feedbackEntry.PatientId == createFeedbackEntryDto.PatientId).SingleOrDefault();
-
-        // if (existingPatientFeedbackEntry == null)
-        // {
-        //     return NotFound();
-        // }
-
         var feedbackEntry = new FeedbackEntry
         {
-            Id = Guid.NewGuid(),
+            // Id = Guid.NewGuid(),
             PatientId = createFeedbackEntryDto.PatientId,
             AuthorId = createFeedbackEntryDto.AuthorId,
             StressMeassurementId = createFeedbackEntryDto.StressMeassurementId,
@@ -71,15 +67,15 @@ public class FeedbackController : ControllerBase
             CreatedDate = DateTimeOffset.UtcNow
         };
 
-        await feedbackEntriesRepository.CreateAsync(feedbackEntry);
+        await feedbackEntriesRepository.Create(feedbackEntry);
 
-        return CreatedAtAction(nameof(GetFeedbackEntryByIdAsync), new { id = feedbackEntry.Id }, feedbackEntry);
+        return CreatedAtAction(nameof(GetFeedbackEntryById), new { id = feedbackEntry.Id }, feedbackEntry);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutAsync(Guid id, UpdateFeedbackEntryDto updateFeedbackEntryDto)
+    public async Task<IActionResult> Put(Guid id, UpdateFeedbackEntryDto updateFeedbackEntryDto)
     {
-        var existingfeedbackEntry = await feedbackEntriesRepository.GetAsync(id);
+        var existingfeedbackEntry = await feedbackEntriesRepository.Get(id);
 
         if (existingfeedbackEntry == null)
         {
@@ -92,7 +88,7 @@ public class FeedbackController : ControllerBase
         existingfeedbackEntry.FeedbackComment = updateFeedbackEntryDto.FeedbackComment;
         existingfeedbackEntry.CreatedDate = DateTimeOffset.UtcNow;
 
-        await feedbackEntriesRepository.UpdateAsync(existingfeedbackEntry);
+        await feedbackEntriesRepository.Update(existingfeedbackEntry);
 
         return NoContent();
     }
@@ -100,16 +96,16 @@ public class FeedbackController : ControllerBase
     //DELETE  /feedback/{id}
     // Removes a feedback entry by id of the entry
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAsync(Guid id)
+    public async Task<IActionResult> Delete(Guid id)
     {
-        var index = await feedbackEntriesRepository.GetAsync(id);
+        var index = await feedbackEntriesRepository.Get(id);
 
         if (index == null)
         {
             return NotFound();
         }
 
-        await feedbackEntriesRepository.RemoveAsync(index.Id);
+        await feedbackEntriesRepository.Remove(index.Id);
 
         return NoContent();
     }

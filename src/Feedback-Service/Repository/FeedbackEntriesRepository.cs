@@ -3,27 +3,25 @@ using MongoDB.Driver;
 
 namespace Feedback_Service.Repository;
 
-public class FeedbackEntriesRepository
+public class FeedbackEntriesRepository : IFeedbackEntriesRepository
 {
     private const string collectionName = "feedback-entries";
     private readonly IMongoCollection<FeedbackEntry> dbCollection;
     private readonly FilterDefinitionBuilder<FeedbackEntry> filterBuilder = Builders<FeedbackEntry>.Filter;
 
-    public FeedbackEntriesRepository()
+    public FeedbackEntriesRepository(IMongoDatabase database)
     {
-        var mongoClient = new MongoClient("mongodb://localhost:27017");
-        var database = mongoClient.GetDatabase("Feedback");
         dbCollection = database.GetCollection<FeedbackEntry>(collectionName);
     }
 
     // retrieving all the feedback entry points in the database
-    public async Task<IReadOnlyCollection<FeedbackEntry>> GetAllAsync()
+    public async Task<IReadOnlyCollection<FeedbackEntry>> GetAll()
     {
         return await dbCollection.Find(filterBuilder.Empty).ToListAsync();
     }
 
     // retrieving specific feedback entry point in the database
-    public async Task<FeedbackEntry> GetAsync(Guid id)
+    public async Task<FeedbackEntry> Get(Guid id)
     {
         //filter to find item based on id
         FilterDefinition<FeedbackEntry> filter = filterBuilder.Eq(entity => entity.Id, id);
@@ -31,7 +29,7 @@ public class FeedbackEntriesRepository
     }
 
     // retrieving all feedback entry points by a patientId in the database
-    public async Task<IReadOnlyCollection<FeedbackEntry>> GetPatientFeedbacksAsync(int patientId)
+    public async Task<IReadOnlyCollection<FeedbackEntry>> GetPatientFeedbacks(int patientId)
     {
         //filter to find item based on id
         FilterDefinition<FeedbackEntry> filter = filterBuilder.Eq(entity => entity.PatientId, patientId);
@@ -41,7 +39,7 @@ public class FeedbackEntriesRepository
     }
 
     //creating a feedback entry point in the database
-    public async Task CreateAsync(FeedbackEntry entity)
+    public async Task Create(FeedbackEntry entity)
     {
         if (entity == null)
         {
@@ -51,7 +49,7 @@ public class FeedbackEntriesRepository
         await dbCollection.InsertOneAsync(entity);
     }
 
-    public async Task UpdateAsync(FeedbackEntry entity)
+    public async Task Update(FeedbackEntry entity)
     {
         if (entity == null)
         {
@@ -63,7 +61,7 @@ public class FeedbackEntriesRepository
         await dbCollection.ReplaceOneAsync(filter, entity);
     }
 
-    public async Task RemoveAsync(Guid id)
+    public async Task Remove(Guid id)
     {
         FilterDefinition<FeedbackEntry> filter = filterBuilder.Eq(entity => entity.Id, id);
         await dbCollection.DeleteOneAsync(filter);

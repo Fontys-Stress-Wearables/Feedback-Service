@@ -25,3 +25,14 @@ C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\obj
 C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\obj\Debug\net6.0\Feedback-Service.pdb
 C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\obj\Debug\net6.0\Feedback-Service.genruntimeconfig.cache
 C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\obj\Debug\net6.0\ref\Feedback-Service.dll
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\DnsClient.dll
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\MongoDB.Bson.dll
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\MongoDB.Driver.dll
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\MongoDB.Driver.Core.dll
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\MongoDB.Libmongocrypt.dll
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\SharpCompress.dll
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\Snappier.dll
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\ZstdSharp.dll
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\runtimes\linux\native\libmongocrypt.so
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\runtimes\osx\native\libmongocrypt.dylib
+C:\Users\victo\source\repos\Semester 6\Feedback-Service\src\Feedback-Service\bin\Debug\net6.0\runtimes\win\native\mongocrypt.dll

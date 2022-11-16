@@ -1,0 +1,5 @@
+src/Feedback-Service/bin/
+src/Feedback-Service/obj/
+.vs/
+.vscode/
+.idea

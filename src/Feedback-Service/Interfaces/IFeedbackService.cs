@@ -1,20 +1,14 @@
-using Feedback_Service.Models;
 
+using Feedback_Service.Dtos;
 namespace Feedback_Service.Interfaces;
 
 public interface IFeedbackService
 {
-    // (Guid Id, Guid PatientId, Guid AuthorId, Guid StressMeassurementId, string FeedbackComment, DateTimeOffset CreatedDate)
-    public IEnumerable<Feedback> GetAll();
-
-    public Feedback GetFeedback(Guid Id, Guid PatientId, Guid AuthorId, Guid StressMeassurementId, string FeedbackComment, DateTimeOffset CreatedDate);
-
-    // public Feedback CreateFeedbackEntry(Guid PatientId, Guid StressMeassurementId, string FeedbackComment);
-    public Feedback CreateFeedbackEntryDto(Guid PatientId, Guid AuthorId, Guid StressMeassurementId, string FeedbackComment);
-
-    public Feedback UpdateFeedbackEntry(Guid PatientId, Guid AuthorId, Guid StressMeassurementId, string FeedbackComment);
-    // public Feedback UpdateFeedbackEntry(Guid PatientId, Guid StressMeassurementId, string FeedbackComment);
-
-    public void RemoveFeedbackEntry(Guid Id);
+    public Task<IEnumerable<FeedbackDto>> GetAll();
+    public Task<FeedbackDto?> GetFeedbackById(Guid Id);
+    public Task<IEnumerable<FeedbackDto>> GetPatientFeedbackEntryById(int patientId);
+    public Task<FeedbackDto?> CreateFeedback(CreateFeedbackDto createFeedbackDto);
+    public Task<FeedbackDto?> UpdateFeedback(Guid id, UpdateFeedbackDto updateFeedbackDto);
+    public Task<FeedbackDto?> DeleteFeedback(Guid id);
 
 }

@@ -1,8 +1,9 @@
 namespace Feedback_Service.Dtos;
 
-public class UpdateFeedbackDTO
+public class UpdateFeedbackDto
 {
-    public Guid PatientId { get; set; }
+    public int PatientId { get; set; }
+    public Guid AuthorId { get; set; }
     public Guid StressMeassurementId { get; set; }
-    public string Feedback { get; set; } = "";
+    public string? FeedbackComment { get; set; }
 }

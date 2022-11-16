@@ -1,4 +1,6 @@
+using Feedback_Service.Interfaces;
 using Feedback_Service.Repository;
+using Feedback_Service.Services;
 using Feedback_Service.Settings;
 using MongoDB.Driver;
 
@@ -21,6 +23,7 @@ builder.Services.AddSingleton(ServiceProvider =>
     return mongoClient.GetDatabase(serviceSettings.ServiceName);
 });
 
+builder.Services.AddSingleton<IFeedbackService, FeedbackService>();
 builder.Services.AddSingleton<IFeedbackEntriesRepository, FeedbackEntriesRepository>();
 
 var app = builder.Build();

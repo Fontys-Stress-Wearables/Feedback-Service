@@ -1,9 +1,7 @@
 using Feedback_Service.Dtos;
 using Feedback_Service.Entities;
 using Feedback_Service.Interfaces;
-using Feedback_Service.Models;
 using Feedback_Service.Repository;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Feedback_Service.Services;
 
@@ -37,7 +35,6 @@ public class FeedbackService : IFeedbackService
         var feedbackEntries = (await feedbackRepository.GetPatientFeedbacks(patientId))
                             .Select(feedback => feedback.AsDto());
 
-        System.Diagnostics.Debug.WriteLine(feedbackEntries);
         return feedbackEntries;
     }
 
@@ -47,12 +44,13 @@ public class FeedbackService : IFeedbackService
         {
             PatientId = createFeedbackDto.PatientId,
             AuthorId = createFeedbackDto.AuthorId,
-            StressMeassurementId = createFeedbackDto.StressMeassurementId,
-            FeedbackComment = createFeedbackDto.FeedbackComment,
+            StressMeasurementId = createFeedbackDto.StressMeasurementId,
+            Comment = createFeedbackDto.Comment,
             CreatedDate = DateTimeOffset.UtcNow
         };
 
         await feedbackRepository.Create(feedbackEntity);
+
         return feedbackEntity.AsDto();
     }
 
@@ -64,8 +62,8 @@ public class FeedbackService : IFeedbackService
 
         existingFeedback.PatientId = updateFeedbackDto.PatientId;
         existingFeedback.AuthorId = updateFeedbackDto.AuthorId;
-        existingFeedback.StressMeassurementId = updateFeedbackDto.StressMeassurementId;
-        existingFeedback.FeedbackComment = updateFeedbackDto.FeedbackComment;
+        existingFeedback.StressMeasurementId = updateFeedbackDto.StressMeasurementId;
+        existingFeedback.Comment = updateFeedbackDto.Comment;
         existingFeedback.CreatedDate = DateTimeOffset.UtcNow;
 
         await feedbackRepository.Update(existingFeedback);

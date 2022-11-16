@@ -5,6 +5,6 @@ public record FeedbackDto(
     int? PatientId,
     Guid? AuthorId,
     Guid? StressMeassurementId,
-    string FeedbackComment,
+    string Comment,
     DateTimeOffset CreatedDate
 );

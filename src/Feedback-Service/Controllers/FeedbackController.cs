@@ -1,7 +1,5 @@
 using Feedback_Service.Dtos;
-using Feedback_Service.Entities;
 using Feedback_Service.Interfaces;
-using Feedback_Service.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Feedback_Service.Controllers;
@@ -19,7 +17,7 @@ public class FeedbackController : ControllerBase
     }
 
     //GET /feedback
-    // retrieves all feedback entries
+    // retrieves all feedbacks
     [HttpGet]
     public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetAll()
     {
@@ -41,7 +39,7 @@ public class FeedbackController : ControllerBase
     }
 
     //GET /feedback/patient/{patientId}
-    // retrieves all feedback entries based on a patient id
+    // retrieves all feedbacks from a specific patient based on their patient id
     [HttpGet("patient/{patientId}")]
     public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetPatientFeedbackById(int patientId)
     {
@@ -62,6 +60,8 @@ public class FeedbackController : ControllerBase
         return CreatedAtAction(nameof(GetFeedbackById), new { id = feedback.Id }, feedback);
     }
 
+    //PUT /feedback
+    // updates a feedback
     [HttpPut("{id}")]
     public async Task<ActionResult> UpdateFeedback(Guid id, UpdateFeedbackDto updateFeedbackDto)
     {
@@ -73,7 +73,7 @@ public class FeedbackController : ControllerBase
     }
 
     //DELETE  /feedback/{id}
-    // Removes a feedback by id
+    // Removes a feedback
     [HttpDelete("{id}")]
     public async Task<IActionResult?> DeleteFeedback(Guid id)
     {

@@ -4,10 +4,10 @@ namespace Feedback_Service.Repository;
 
 public interface IFeedbackRepository
 {
-    Task Create(FeedbackEntity entity);
-    Task<FeedbackEntity> Get(Guid id);
     Task<IReadOnlyCollection<FeedbackEntity>> GetAll();
+    Task<FeedbackEntity> Get(Guid id);
     Task<IReadOnlyCollection<FeedbackEntity>> GetPatientFeedbacks(int patientId);
-    Task Remove(Guid id);
+    Task Create(FeedbackEntity entity);
     Task Update(FeedbackEntity entity);
+    Task Remove(Guid id);
 }

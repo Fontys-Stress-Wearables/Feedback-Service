@@ -5,7 +5,7 @@ namespace Feedback_Service.Repository;
 
 public class FeedbackRepository : IFeedbackRepository
 {
-    private const string collectionName = "feedback-entries";
+    private const string collectionName = "feedbacks";
     private readonly IMongoCollection<FeedbackEntity> dbCollection;
     private readonly FilterDefinitionBuilder<FeedbackEntity> filterBuilder = Builders<FeedbackEntity>.Filter;
 
@@ -14,13 +14,13 @@ public class FeedbackRepository : IFeedbackRepository
         dbCollection = database.GetCollection<FeedbackEntity>(collectionName);
     }
 
-    // retrieving all the feedback entry points in the database
+    // retrieving all the feedbacks stored in the database
     public async Task<IReadOnlyCollection<FeedbackEntity>> GetAll()
     {
         return await dbCollection.Find(filterBuilder.Empty).ToListAsync();
     }
 
-    // retrieving specific feedback entry point in the database
+    // retrieving specific feedback stored in the database
     public async Task<FeedbackEntity> Get(Guid id)
     {
         //filter to find item based on id
@@ -28,17 +28,15 @@ public class FeedbackRepository : IFeedbackRepository
         return await dbCollection.Find(filter).FirstOrDefaultAsync();
     }
 
-    // retrieving all feedback entry points by a patientId in the database
+    // retrieving all feedbacks by a patientId stored in the database
     public async Task<IReadOnlyCollection<FeedbackEntity>> GetPatientFeedbacks(int patientId)
     {
         //filter to find item based on id
         FilterDefinition<FeedbackEntity> filter = filterBuilder.Eq(entity => entity.PatientId, patientId);
         return await dbCollection.Find(filter).ToListAsync();
-
-        // return await dbCollection.Find(filter);
     }
 
-    //creating a feedback entry point in the database
+    //creating a feedback to store in the database
     public async Task Create(FeedbackEntity entity)
     {
         if (entity == null)
@@ -49,6 +47,7 @@ public class FeedbackRepository : IFeedbackRepository
         await dbCollection.InsertOneAsync(entity);
     }
 
+    //updating a feedback that is stored in the database
     public async Task Update(FeedbackEntity entity)
     {
         if (entity == null)
@@ -61,6 +60,7 @@ public class FeedbackRepository : IFeedbackRepository
         await dbCollection.ReplaceOneAsync(filter, entity);
     }
 
+    //removing a feedback that is stored in the database
     public async Task Remove(Guid id)
     {
         FilterDefinition<FeedbackEntity> filter = filterBuilder.Eq(entity => entity.Id, id);

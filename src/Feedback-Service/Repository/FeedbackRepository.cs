@@ -3,43 +3,43 @@ using MongoDB.Driver;
 
 namespace Feedback_Service.Repository;
 
-public class FeedbackEntriesRepository : IFeedbackEntriesRepository
+public class FeedbackRepository : IFeedbackRepository
 {
     private const string collectionName = "feedback-entries";
-    private readonly IMongoCollection<FeedbackEntry> dbCollection;
-    private readonly FilterDefinitionBuilder<FeedbackEntry> filterBuilder = Builders<FeedbackEntry>.Filter;
+    private readonly IMongoCollection<FeedbackEntity> dbCollection;
+    private readonly FilterDefinitionBuilder<FeedbackEntity> filterBuilder = Builders<FeedbackEntity>.Filter;
 
-    public FeedbackEntriesRepository(IMongoDatabase database)
+    public FeedbackRepository(IMongoDatabase database)
     {
-        dbCollection = database.GetCollection<FeedbackEntry>(collectionName);
+        dbCollection = database.GetCollection<FeedbackEntity>(collectionName);
     }
 
     // retrieving all the feedback entry points in the database
-    public async Task<IReadOnlyCollection<FeedbackEntry>> GetAll()
+    public async Task<IReadOnlyCollection<FeedbackEntity>> GetAll()
     {
         return await dbCollection.Find(filterBuilder.Empty).ToListAsync();
     }
 
     // retrieving specific feedback entry point in the database
-    public async Task<FeedbackEntry> Get(Guid id)
+    public async Task<FeedbackEntity> Get(Guid id)
     {
         //filter to find item based on id
-        FilterDefinition<FeedbackEntry> filter = filterBuilder.Eq(entity => entity.Id, id);
+        FilterDefinition<FeedbackEntity> filter = filterBuilder.Eq(entity => entity.Id, id);
         return await dbCollection.Find(filter).FirstOrDefaultAsync();
     }
 
     // retrieving all feedback entry points by a patientId in the database
-    public async Task<IReadOnlyCollection<FeedbackEntry>> GetPatientFeedbacks(int patientId)
+    public async Task<IReadOnlyCollection<FeedbackEntity>> GetPatientFeedbacks(int patientId)
     {
         //filter to find item based on id
-        FilterDefinition<FeedbackEntry> filter = filterBuilder.Eq(entity => entity.PatientId, patientId);
+        FilterDefinition<FeedbackEntity> filter = filterBuilder.Eq(entity => entity.PatientId, patientId);
         return await dbCollection.Find(filter).ToListAsync();
 
         // return await dbCollection.Find(filter);
     }
 
     //creating a feedback entry point in the database
-    public async Task Create(FeedbackEntry entity)
+    public async Task Create(FeedbackEntity entity)
     {
         if (entity == null)
         {
@@ -49,21 +49,21 @@ public class FeedbackEntriesRepository : IFeedbackEntriesRepository
         await dbCollection.InsertOneAsync(entity);
     }
 
-    public async Task Update(FeedbackEntry entity)
+    public async Task Update(FeedbackEntity entity)
     {
         if (entity == null)
         {
             throw new ArgumentNullException(nameof(entity));
         }
 
-        FilterDefinition<FeedbackEntry> filter = filterBuilder.Eq(existingEntity => existingEntity.Id, entity.Id);
+        FilterDefinition<FeedbackEntity> filter = filterBuilder.Eq(existingEntity => existingEntity.Id, entity.Id);
 
         await dbCollection.ReplaceOneAsync(filter, entity);
     }
 
     public async Task Remove(Guid id)
     {
-        FilterDefinition<FeedbackEntry> filter = filterBuilder.Eq(entity => entity.Id, id);
+        FilterDefinition<FeedbackEntity> filter = filterBuilder.Eq(entity => entity.Id, id);
         await dbCollection.DeleteOneAsync(filter);
     }
 }

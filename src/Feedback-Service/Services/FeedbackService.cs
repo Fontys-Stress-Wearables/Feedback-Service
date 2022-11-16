@@ -9,33 +9,33 @@ namespace Feedback_Service.Services;
 
 public class FeedbackService : IFeedbackService
 {
-    private readonly IFeedbackEntriesRepository feedbackEntriesRepository;
+    private readonly IFeedbackRepository feedbackRepository;
 
-    public FeedbackService(IFeedbackEntriesRepository feedbackEntriesRepository)
+    public FeedbackService(IFeedbackRepository feedbackRepository)
     {
-        this.feedbackEntriesRepository = feedbackEntriesRepository;
+        this.feedbackRepository = feedbackRepository;
     }
 
     public async Task<IEnumerable<FeedbackDto>> GetAll()
     {
-        var feedbackEntries = (await feedbackEntriesRepository.GetAll())
-                                .Select(feedbackEntry => feedbackEntry.AsDto());
+        var feedbackEntries = (await feedbackRepository.GetAll())
+                                .Select(feedback => feedback.AsDto());
         return feedbackEntries;
     }
 
     public async Task<FeedbackDto?> GetFeedbackById(Guid id)
     {
-        var feedbackEntry = await feedbackEntriesRepository.Get(id);
+        var feedback = await feedbackRepository.Get(id);
 
-        if (feedbackEntry == null) return null;
+        if (feedback == null) return null;
 
-        return feedbackEntry.AsDto();
+        return feedback.AsDto();
     }
 
-    public async Task<IEnumerable<FeedbackDto>> GetPatientFeedbackEntryById(int patientId)
+    public async Task<IEnumerable<FeedbackDto>> GetPatientFeedbackById(int patientId)
     {
-        var feedbackEntries = (await feedbackEntriesRepository.GetPatientFeedbacks(patientId))
-                            .Select(feedbackEntry => feedbackEntry.AsDto());
+        var feedbackEntries = (await feedbackRepository.GetPatientFeedbacks(patientId))
+                            .Select(feedback => feedback.AsDto());
 
         System.Diagnostics.Debug.WriteLine(feedbackEntries);
         return feedbackEntries;
@@ -43,7 +43,7 @@ public class FeedbackService : IFeedbackService
 
     public async Task<FeedbackDto?> CreateFeedback(CreateFeedbackDto createFeedbackDto)
     {
-        var feedbackEntry = new FeedbackEntry
+        var feedbackEntity = new FeedbackEntity
         {
             PatientId = createFeedbackDto.PatientId,
             AuthorId = createFeedbackDto.AuthorId,
@@ -52,34 +52,34 @@ public class FeedbackService : IFeedbackService
             CreatedDate = DateTimeOffset.UtcNow
         };
 
-        await feedbackEntriesRepository.Create(feedbackEntry);
-        return feedbackEntry.AsDto();
+        await feedbackRepository.Create(feedbackEntity);
+        return feedbackEntity.AsDto();
     }
 
     public async Task<FeedbackDto?> UpdateFeedback(Guid id, UpdateFeedbackDto updateFeedbackDto)
     {
-        var existingfeedbackEntry = await feedbackEntriesRepository.Get(id);
+        var existingFeedback = await feedbackRepository.Get(id);
 
-        if (existingfeedbackEntry == null) return null!;
+        if (existingFeedback == null) return null!;
 
-        existingfeedbackEntry.PatientId = updateFeedbackDto.PatientId;
-        existingfeedbackEntry.AuthorId = updateFeedbackDto.AuthorId;
-        existingfeedbackEntry.StressMeassurementId = updateFeedbackDto.StressMeassurementId;
-        existingfeedbackEntry.FeedbackComment = updateFeedbackDto.FeedbackComment;
-        existingfeedbackEntry.CreatedDate = DateTimeOffset.UtcNow;
+        existingFeedback.PatientId = updateFeedbackDto.PatientId;
+        existingFeedback.AuthorId = updateFeedbackDto.AuthorId;
+        existingFeedback.StressMeassurementId = updateFeedbackDto.StressMeassurementId;
+        existingFeedback.FeedbackComment = updateFeedbackDto.FeedbackComment;
+        existingFeedback.CreatedDate = DateTimeOffset.UtcNow;
 
-        await feedbackEntriesRepository.Update(existingfeedbackEntry);
+        await feedbackRepository.Update(existingFeedback);
 
-        return existingfeedbackEntry.AsDto();
+        return existingFeedback.AsDto();
     }
 
     public async Task<FeedbackDto?> DeleteFeedback(Guid id)
     {
-        var index = await feedbackEntriesRepository.Get(id);
+        var index = await feedbackRepository.Get(id);
 
         if (index == null) return null!;
 
-        await feedbackEntriesRepository.Remove(index.Id);
+        await feedbackRepository.Remove(index.Id);
 
         return index.AsDto();
     }

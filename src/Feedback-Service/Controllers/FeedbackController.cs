@@ -43,16 +43,16 @@ public class FeedbackController : ControllerBase
     //GET /feedback/patient/{patientId}
     // retrieves all feedback entries based on a patient id
     [HttpGet("patient/{patientId}")]
-    public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetPatientFeedbackEntryById(int patientId)
+    public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetPatientFeedbackById(int patientId)
     {
-        var feedback = await _feedbackService.GetPatientFeedbackEntryById(patientId);
+        var feedback = await _feedbackService.GetPatientFeedbackById(patientId);
         if (feedback == null) return NotFound();
 
         return Ok(feedback);
     }
 
     //POST /feedback
-    // created a feedback entry
+    // created a feedback
     [HttpPost]
     public async Task<ActionResult<FeedbackDto>> CreateFeedback(CreateFeedbackDto createFeedbackDto)
     {
@@ -73,7 +73,7 @@ public class FeedbackController : ControllerBase
     }
 
     //DELETE  /feedback/{id}
-    // Removes a feedback entry by id of the entry
+    // Removes a feedback by id
     [HttpDelete("{id}")]
     public async Task<IActionResult?> DeleteFeedback(Guid id)
     {

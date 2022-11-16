@@ -2,7 +2,7 @@ using Feedback_Service.Dtos;
 
 namespace Feedback_Service.Entities;
 
-public class FeedbackEntry
+public class FeedbackEntity
 {
     public Guid Id { get; set; }
     public int PatientId { get; set; }

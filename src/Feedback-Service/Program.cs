@@ -24,7 +24,7 @@ builder.Services.AddSingleton(ServiceProvider =>
 });
 
 builder.Services.AddSingleton<IFeedbackService, FeedbackService>();
-builder.Services.AddSingleton<IFeedbackEntriesRepository, FeedbackEntriesRepository>();
+builder.Services.AddSingleton<IFeedbackRepository, FeedbackRepository>();
 
 var app = builder.Build();
 

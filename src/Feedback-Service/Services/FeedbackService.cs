@@ -1,6 +1,6 @@
 using Feedback_Service.Dtos;
-using Feedback_Service.Entities;
 using Feedback_Service.Interfaces;
+using Feedback_Service.Models;
 using Feedback_Service.Repository;
 
 namespace Feedback_Service.Services;
@@ -40,7 +40,7 @@ public class FeedbackService : IFeedbackService
 
     public async Task<FeedbackDto?> CreateFeedback(CreateFeedbackDto createFeedbackDto)
     {
-        var feedbackEntity = new FeedbackEntity
+        var feedbackEntity = new Feedback
         {
             PatientId = createFeedbackDto.PatientId,
             AuthorId = createFeedbackDto.AuthorId,

@@ -8,5 +8,5 @@ public record CreateFeedbackDto
     [Required] int PatientId,
     [Required] Guid AuthorId,
     [Required] Guid StressMeasurementId,
-    [Optional] string? Comment
+    [Required] string Comment
 );

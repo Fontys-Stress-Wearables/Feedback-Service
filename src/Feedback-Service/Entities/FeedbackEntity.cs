@@ -8,7 +8,7 @@ public class FeedbackEntity
     public int PatientId { get; set; }
     public Guid AuthorId { get; set; }
     public Guid StressMeasurementId { get; set; }
-    public string? Comment { get; set; }
+    public string Comment { get; set; }
     public DateTimeOffset CreatedDate { get; set; }
 
     public FeedbackDto AsDto()

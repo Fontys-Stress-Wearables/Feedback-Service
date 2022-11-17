@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
+
 namespace Feedback_Service.Dtos;
 
-public class UpdateFeedbackDTO
-{
-    public Guid PatientId { get; set; }
-    public Guid StressMeassurementId { get; set; }
-    public string Feedback { get; set; } = "";
-}
+public record UpdateFeedbackDto
+(
+    [Required] int PatientId,
+    [Required] Guid AuthorId,
+    [Required] Guid StressMeasurementId,
+    [Required] string? Comment
+);

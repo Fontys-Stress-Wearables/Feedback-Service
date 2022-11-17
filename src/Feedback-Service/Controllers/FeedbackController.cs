@@ -1,6 +1,5 @@
 using Feedback_Service.Dtos;
-using Feedback_Service.Entities;
-using Feedback_Service.Repository;
+using Feedback_Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Feedback_Service.Controllers;
@@ -9,103 +8,78 @@ namespace Feedback_Service.Controllers;
 [Route("feedback")]
 public class FeedbackController : ControllerBase
 {
-    private readonly IFeedbackEntriesRepository feedbackEntriesRepository;
 
-    public FeedbackController(IFeedbackEntriesRepository feedbackEntriesRepository)
+    private readonly IFeedbackService _feedbackService;
+
+    public FeedbackController(IFeedbackService feedbackService)
     {
-        this.feedbackEntriesRepository = feedbackEntriesRepository;
+        _feedbackService = feedbackService;
     }
 
     //GET /feedback
-    // retrieves all feedback entries
+    // retrieves all feedbacks
     [HttpGet]
-    public async Task<IEnumerable<FeedbackEntryDto>> Get()
+    public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetAll()
     {
-        var feedbackEntries = (await feedbackEntriesRepository.GetAll())
-                                .Select(feedbackEntry => feedbackEntry.AsDto());
-        return feedbackEntries;
+        var feedbacks = await _feedbackService.GetAll();
+
+        return Ok(feedbacks);
     }
 
     //GET /feedback/{id}
     // retrieves a specific feedback
     [HttpGet("{id}")]
-    public async Task<ActionResult<FeedbackEntryDto>> GetFeedbackEntryById(Guid id)
+    public async Task<ActionResult<FeedbackDto>> GetFeedbackById(Guid id)
     {
-        var feedbackEntry = await feedbackEntriesRepository.Get(id);
+        var feedback = await _feedbackService.GetFeedbackById(id);
 
-        if (feedbackEntry == null)
-        {
-            return NotFound();
-        }
-        return feedbackEntry.AsDto();
+        if (feedback == null) return NotFound();
+
+        return Ok(feedback);
     }
 
     //GET /feedback/patient/{patientId}
-    // retrieves all feedback entries based on a patient id
+    // retrieves all feedbacks from a specific patient based on their patient id
     [HttpGet("patient/{patientId}")]
-    public async Task<IEnumerable<FeedbackEntryDto>> GetPatientFeedbackEntryById(int patientId)
+    public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetPatientFeedbackById(int patientId)
     {
-        var feedbackEntries = (await feedbackEntriesRepository.GetPatientFeedbacks(patientId))
-                            .Select(feedbackEntry => feedbackEntry.AsDto());
+        var feedback = await _feedbackService.GetPatientFeedbackById(patientId);
+        if (feedback == null) return NotFound();
 
-        System.Diagnostics.Debug.WriteLine(feedbackEntries);
-        return feedbackEntries;
+        return Ok(feedback);
     }
 
     //POST /feedback
-    // created a feedback entry
+    // created a feedback
     [HttpPost]
-    public async Task<ActionResult<FeedbackEntryDto>> Post(CreateFeedbackEntryDto createFeedbackEntryDto)
+    public async Task<ActionResult<FeedbackDto>> CreateFeedback(CreateFeedbackDto createFeedbackDto)
     {
-        var feedbackEntry = new FeedbackEntry
-        {
-            // Id = Guid.NewGuid(),
-            PatientId = createFeedbackEntryDto.PatientId,
-            AuthorId = createFeedbackEntryDto.AuthorId,
-            StressMeassurementId = createFeedbackEntryDto.StressMeassurementId,
-            FeedbackComment = createFeedbackEntryDto.FeedbackComment,
-            CreatedDate = DateTimeOffset.UtcNow
-        };
+        var feedback = await _feedbackService.CreateFeedback(createFeedbackDto);
+        if (feedback == null) return BadRequest();
 
-        await feedbackEntriesRepository.Create(feedbackEntry);
-
-        return CreatedAtAction(nameof(GetFeedbackEntryById), new { id = feedbackEntry.Id }, feedbackEntry);
+        return CreatedAtAction(nameof(GetFeedbackById), new { id = feedback.Id }, feedback);
     }
 
+    //PUT /feedback
+    // updates a feedback
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(Guid id, UpdateFeedbackEntryDto updateFeedbackEntryDto)
+    public async Task<ActionResult> UpdateFeedback(Guid id, UpdateFeedbackDto updateFeedbackDto)
     {
-        var existingfeedbackEntry = await feedbackEntriesRepository.Get(id);
+        var feedback = await _feedbackService.UpdateFeedback(id, updateFeedbackDto);
 
-        if (existingfeedbackEntry == null)
-        {
-            return NotFound();
-        }
-
-        existingfeedbackEntry.PatientId = updateFeedbackEntryDto.PatientId;
-        existingfeedbackEntry.AuthorId = updateFeedbackEntryDto.AuthorId;
-        existingfeedbackEntry.StressMeassurementId = updateFeedbackEntryDto.StressMeassurementId;
-        existingfeedbackEntry.FeedbackComment = updateFeedbackEntryDto.FeedbackComment;
-        existingfeedbackEntry.CreatedDate = DateTimeOffset.UtcNow;
-
-        await feedbackEntriesRepository.Update(existingfeedbackEntry);
+        if (feedback == null) return NotFound();
 
         return NoContent();
     }
 
     //DELETE  /feedback/{id}
-    // Removes a feedback entry by id of the entry
+    // Removes a feedback
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult?> DeleteFeedback(Guid id)
     {
-        var index = await feedbackEntriesRepository.Get(id);
+        var feedback = await _feedbackService.DeleteFeedback(id);
 
-        if (index == null)
-        {
-            return NotFound();
-        }
-
-        await feedbackEntriesRepository.Remove(index.Id);
+        if (feedback == null) return NotFound();
 
         return NoContent();
     }

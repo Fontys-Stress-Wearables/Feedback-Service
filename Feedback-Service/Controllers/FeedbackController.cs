@@ -41,7 +41,7 @@ public class FeedbackController : ControllerBase
     //GET /feedback/patient/{patientId}
     // retrieves all feedbacks from a specific patient based on their patient id
     [HttpGet("patient/{patientId}")]
-    public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetPatientFeedbackById(int patientId)
+    public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetPatientFeedbackById(Guid patientId)
     {
         var feedback = await _feedbackService.GetPatientFeedbackById(patientId);
         if (feedback == null) return NotFound();

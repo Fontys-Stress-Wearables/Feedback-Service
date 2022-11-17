@@ -29,7 +29,7 @@ public class FeedbackRepository : IFeedbackRepository
     }
 
     // retrieving all feedbacks by a patientId stored in the database
-    public async Task<IReadOnlyCollection<Feedback>> GetPatientFeedbacks(int patientId)
+    public async Task<IReadOnlyCollection<Feedback>> GetPatientFeedbacks(Guid patientId)
     {
         //filter to find item based on id
         FilterDefinition<Feedback> filter = filterBuilder.Eq(entity => entity.PatientId, patientId);

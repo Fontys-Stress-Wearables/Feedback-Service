@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Feedback_Service.Dtos;
 using Feedback_Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -44,8 +45,7 @@ public class FeedbackController : ControllerBase
     public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetPatientFeedbackById(Guid patientId)
     {
         var feedback = await _feedbackService.GetPatientFeedbackById(patientId);
-        if (feedback == null) return NotFound();
-
+        
         return Ok(feedback);
     }
 

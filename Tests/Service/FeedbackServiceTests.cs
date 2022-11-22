@@ -251,10 +251,6 @@ public class FeedbackServiceTests
         Assert.Null(task.Result);
     }
     
-    /// <summary>
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
     private IEnumerable<Feedback> GetPatientFeedbacksById(Guid patientId)
     {
         List<Feedback> feedbacks = new List<Feedback>

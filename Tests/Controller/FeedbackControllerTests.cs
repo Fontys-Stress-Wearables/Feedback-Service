@@ -10,11 +10,9 @@ namespace Tests.Controller;
 public class FeedbackControllerTests
 {
     private readonly Mock<IFeedbackService> _mockService;
-    private readonly ITestOutputHelper output;
-    public FeedbackControllerTests(ITestOutputHelper output)
+    public FeedbackControllerTests()
     {
         _mockService = new Mock<IFeedbackService>();
-        this.output = output;
     }
     
     // Get All - Happy Flow 

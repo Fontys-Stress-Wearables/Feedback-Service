@@ -5,7 +5,7 @@ namespace Feedback_Service.Dtos;
 
 public record CreateFeedbackDto
 (
-    [Required] int PatientId,
+    [Required] Guid PatientId,
     [Required] Guid AuthorId,
     [Required] Guid StressMeasurementId,
     [Required] string Comment

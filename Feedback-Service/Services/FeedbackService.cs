@@ -30,7 +30,7 @@ public class FeedbackService : IFeedbackService
         return feedback.AsDto();
     }
 
-    public async Task<IEnumerable<FeedbackDto>> GetPatientFeedbackById(int patientId)
+    public async Task<IEnumerable<FeedbackDto>> GetPatientFeedbackById(Guid patientId)
     {
         var feedbackEntries = (await feedbackRepository.GetPatientFeedbacks(patientId))
                             .Select(feedback => feedback.AsDto());

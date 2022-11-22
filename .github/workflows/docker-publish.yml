@@ -1,4 +1,4 @@
-name: patient-service
+name: feedback-service
 
 on:
   # run it on push to the default repository branch

@@ -1,10 +1,7 @@
 ﻿using Feedback_Service.Dtos;
-using Feedback_Service.Interfaces;
 using Feedback_Service.Models;
 using Feedback_Service.Repository;
 using Feedback_Service.Services;
-using Microsoft.AspNetCore.Mvc;
-using Xunit.Abstractions;
 
 namespace Tests.Service;
 
@@ -34,28 +31,7 @@ public class FeedbackServiceTests
         var feedback = returnValue.FirstOrDefault();
         Assert.Equal("Hello World", feedback!.Comment);
     }
-    
-    // // Get All - Sad Flow 
-    // [Fact]
-    // public void GetAll_ReturnsNoFeedback_WhenNoFeedbackFound()
-    // {
-    //     // Arrange
-    //     _mockRepository.Setup(service => service.GetAll())
-    //         .ReturnsAsync(new List<FeedbackDto>());
-    //     var controller = new FeedbackController(_mockService.Object);
-    //
-    //     // Act
-    //     var result = controller.GetAll();
-    //
-    //     // Assert
-    //     var task = Assert.IsType<Task<ActionResult<IEnumerable<FeedbackDto>>>>(result);
-    //     var okResult = Assert.IsType<OkObjectResult>(task.Result.Result);
-    //     var returnValue = Assert.IsType<List<FeedbackDto>>(okResult.Value);
-    //     Assert.Empty(returnValue);
-    // }
-    
-    
-    
+
     // Get Specific Feedback - Happy Flow 
     [Fact]
     public void GetFeedbackById_ReturnsSpecificFeedback()
@@ -95,58 +71,7 @@ public class FeedbackServiceTests
         var task = Assert.IsType<Task<FeedbackDto>>(result);
         Assert.Null(task.Result);
     }
-    
-    
-    
-    // // Get All Feedback by specific Patient - Happy Flow 
-    // [Fact]
-    // public void GetPatientFeedbackById_ReturnsAllFeedbackByPatient()
-    // {
-    //     // Arrange
-    //     Guid testSessionGuid = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B019D");
-    //     
-    //     _mockService.Setup(service => service.GetPatientFeedbackById(testSessionGuid))
-    //         .ReturnsAsync(GetPatientFeedbacksById(testSessionGuid));
-    //     
-    //     var controller = new FeedbackController(_mockService.Object);
-    //
-    //     // Act
-    //     var result = controller.GetPatientFeedbackById(testSessionGuid);
-    //
-    //     // Assert
-    //     var task = Assert.IsType<Task<ActionResult<IEnumerable<FeedbackDto>>>>(result);
-    //     var okResult = Assert.IsType<OkObjectResult>(task.Result.Result);
-    //     var returnValue = Assert.IsType<List<FeedbackDto>>(okResult.Value);
-    //     Assert.NotEmpty(returnValue);
-    //     var feedback = returnValue.FirstOrDefault();
-    //     Assert.Equal(new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0456"), feedback!.Id);
-    //     Assert.Equal("Hello World", feedback!.Comment);
-    // }
-    //
-    // // All Feedback by specific Patient - Sad Flow 
-    // [Fact]
-    // public void GetPatientFeedbackById_ReturnsNoFeedbackByPatient_WhenNoFeedbackFound()
-    // {
-    //     // Arrange
-    //     Guid testSessionGuid = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B04DA");
-    //     _mockService.Setup(service => service.GetPatientFeedbackById(testSessionGuid))
-    //         .ReturnsAsync(new List<FeedbackDto>());
-    //
-    //     
-    //     var controller = new FeedbackController(_mockService.Object);
-    //
-    //     // Act
-    //     var result = controller.GetPatientFeedbackById(testSessionGuid);
-    //
-    //     // Assert
-    //     var task = Assert.IsType<Task<ActionResult<IEnumerable<FeedbackDto>>>>(result);
-    //     var actionResult = Assert.IsType<OkObjectResult>(task.Result.Result);
-    //     var returnValue = Assert.IsType<List<FeedbackDto>>(actionResult.Value);
-    //     Assert.Empty(returnValue);
-    // }
-    //
-    //
-    
+
     // Create a Feedback for specific Patient and checks if a new feedback has been created- Happy Flow 
     [Fact]
     public void CreateFeedback_ReturnsNewlyCreatedFeedback()

@@ -11,12 +11,9 @@ namespace Tests.Service;
 public class FeedbackServiceTests
 {
     private readonly Mock<IFeedbackRepository> _mockRepository;
-    private readonly ITestOutputHelper output;
-    
-    public FeedbackServiceTests(ITestOutputHelper output)
+    public FeedbackServiceTests()
     {
         _mockRepository = new Mock<IFeedbackRepository>();
-        this.output = output;
     }
     
     // Get All - Happy Flow 

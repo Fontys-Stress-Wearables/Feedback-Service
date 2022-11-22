@@ -167,26 +167,6 @@ public class FeedbackServiceTests
         var feedback = task.Result;
         Assert.Equal("Lorem Ipsum", feedback.Comment);
     }
-    
-    // // Create a Feedback for specific Patient and checks what occurs when a feedback can not be made- Sad Flow 
-    // [Fact]
-    // public void CreateFeedback_ReturnsNewlyCreatedFeedback_ReturnsBadRequest_WhenFeedbackCanNotBeMade()
-    // {
-    //     // Arrange
-    //     var service = new FeedbackService(_mockRepository.Object);
-    //     
-    //     CreateFeedbackDto createIssueDto = new CreateFeedbackDto(new Guid(), new Guid(), new Guid(), "");
-    //
-    //     // Act
-    //     var result = service.CreateFeedback(createIssueDto);
-    //     
-    //     // Assert
-    //     var task = Assert.IsType<Task<ActionResult<FeedbackDto>>>(result);
-    //     var actionResult = task.Result;
-    //     Assert.IsType<BadRequestResult>(actionResult.Result);
-    // }
-
-    
 
     // Updates a Feedback for specific Patient - Happy Flow 
     [Fact]

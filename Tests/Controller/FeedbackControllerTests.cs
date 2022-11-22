@@ -285,10 +285,6 @@ public class FeedbackControllerTests
         Assert.IsType<NotFoundResult>(task.Result);
     }
     
-    /// <summary>
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
     private IEnumerable<FeedbackDto> GetPatientFeedbacksById(Guid patientId)
     {
         List<FeedbackDto> feedbackDtos = new List<FeedbackDto>

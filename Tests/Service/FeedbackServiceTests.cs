@@ -31,6 +31,24 @@ public class FeedbackServiceTests
         var feedback = returnValue.FirstOrDefault();
         Assert.Equal("Hello World", feedback!.Comment);
     }
+    
+    // Get All - Sad Flow 
+    [Fact]
+    public void GetAll_ReturnsEmptyArray_WhenNoFeedbackFound()
+    {
+        // Arrange
+        _mockRepository.Setup(service => service.GetAll())
+            .ReturnsAsync(GetEmptyFeedbacks());
+        
+        var service = new FeedbackService(_mockRepository.Object);
+
+        // Act
+        var result = service.GetAll();
+
+        // Assert
+        var task = Assert.IsType<Task<IEnumerable<FeedbackDto>>>(result);
+        Assert.Empty(task.Result);
+    }
 
     // Get Specific Feedback - Happy Flow 
     [Fact]
@@ -70,6 +88,45 @@ public class FeedbackServiceTests
         // Assert
         var task = Assert.IsType<Task<FeedbackDto>>(result);
         Assert.Null(task.Result);
+    }    
+    
+    // Get All Feedback by specific Patient - Happy Flow 
+    [Fact]
+    public void GetPatientFeedbackById_ReturnsAllFeedbackByPatient()
+    {
+        // Arrange
+        Guid testSessionGuid = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B019D");
+        
+        _mockRepository.Setup(repo => repo.GetPatientFeedbacks(testSessionGuid))
+            .ReturnsAsync(GetPatientFeedbacksById(testSessionGuid));
+        var service = new FeedbackService(_mockRepository.Object);
+
+        // Act
+        var result = service.GetPatientFeedbackById(testSessionGuid);
+
+        // Assert
+        var task = Assert.IsType<Task<IEnumerable<FeedbackDto>>>(result);
+        var returnValue = task.Result;
+        var feedback = returnValue.FirstOrDefault();
+        Assert.Equal("Hello World", feedback!.Comment);
+    }
+    
+    // All Feedback by specific Patient - Sad Flow 
+    [Fact]
+    public void GetPatientFeedbackById_ReturnsNoFeedbackByPatient_WhenNoFeedbackFound()
+    {
+        // Arrange
+        Guid testSessionGuid = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B019D");
+        _mockRepository.Setup(repo => repo.GetPatientFeedbacks(testSessionGuid))
+            .ReturnsAsync(GetEmptyFeedbacks());
+        var service = new FeedbackService(_mockRepository.Object);
+
+        // Act
+        var result = service.GetPatientFeedbackById(testSessionGuid);
+
+        // Assert
+        var task = Assert.IsType<Task<IEnumerable<FeedbackDto>>>(result);
+        Assert.Empty(task.Result);
     }
 
     // Create a Feedback for specific Patient and checks if a new feedback has been created- Happy Flow 
@@ -176,7 +233,7 @@ public class FeedbackServiceTests
         Assert.Null(task.Result);
     }
     
-    private IEnumerable<Feedback> GetPatientFeedbacksById(Guid patientId)
+    private IReadOnlyCollection<Feedback> GetPatientFeedbacksById(Guid patientId)
     {
         List<Feedback> feedbacks = new List<Feedback>
         {
@@ -237,6 +294,14 @@ public class FeedbackServiceTests
                 Comment = "Lorem Ipsum",
                 CreatedDate = DateTimeOffset.Now
             }
+        };
+
+        return feedbacks;
+    }
+    private IReadOnlyCollection<Feedback> GetEmptyFeedbacks()
+    {
+        List<Feedback> feedbacks = new List<Feedback>
+        {
         };
 
         return feedbacks;

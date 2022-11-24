@@ -1,4 +1,5 @@
-﻿using Feedback_Service.Dtos;
+﻿using System.Linq.Expressions;
+using Feedback_Service.Dtos;
 using Feedback_Service.Models;
 using Feedback_Service.Repository;
 using Feedback_Service.Services;
@@ -88,7 +89,9 @@ public class FeedbackServiceTests
         // Assert
         var task = Assert.IsType<Task<FeedbackDto>>(result);
         Assert.Null(task.Result);
-    }    
+    }
+    
+    
     
     // Get All Feedback by specific Patient - Happy Flow 
     [Fact]
@@ -128,7 +131,62 @@ public class FeedbackServiceTests
         var task = Assert.IsType<Task<IEnumerable<FeedbackDto>>>(result);
         Assert.Empty(task.Result);
     }
+    
+    
 
+    
+    // Get All Feedback by specific Patient with timespan of feedback- Happy Flow 
+    [Fact]
+    public void GetPatientFeedbackByTimeSpan_ReturnsAllFeedbackByPatient()
+    {
+        // Arrange
+        Guid testSessionGuid = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B019D");
+        DateTime testStartTime = new DateTime(2008, 5, 1, 8, 6, 32,0);
+        DateTime testEndTime = new DateTime(2008, 6, 1, 8, 6, 32,0);
+
+        Expression<Func<Feedback, bool>> filter = feedback => feedback.PatientId == testSessionGuid && feedback.CreatedStressMeassurementDate > testStartTime && feedback.CreatedStressMeassurementDate > testEndTime;
+
+        _mockRepository.Setup(repo => repo.GetAll(It.IsAny<Expression<Func<Feedback, bool>>>()))
+        // _mockRepository.Setup(repo => repo.GetAll())
+            .ReturnsAsync(GetFeedbacks());
+        var service = new FeedbackService(_mockRepository.Object);
+
+        // Act
+        var result = service.GetPatientFeedbackByTimeSpan(testSessionGuid, testStartTime, testEndTime);
+
+        // Assert
+        var task = Assert.IsType<Task<IEnumerable<FeedbackDto>>>(result);
+        var returnValue = task.Result;
+        var feedback = returnValue.FirstOrDefault();
+        Assert.Equal("Hello World", feedback!.Comment);
+    }
+    
+    // GetPatientFeedbackByTimeSpan and returns empty array when no feedback is found- SAD Flow 
+    [Fact]
+    public void GetPatientFeedbackByTimeSpan_ReturnsEmptyArray_WhenNoFeedbackFound()
+    {
+        // Arrange
+        Guid testSessionGuid = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B019D");
+        DateTime testStartTime = new DateTime(2008, 5, 1, 8, 6, 32,0);
+        DateTime testEndTime = new DateTime(2008, 6, 1, 8, 6, 32,0);
+
+        Expression<Func<Feedback, bool>> filter = feedback => feedback.PatientId == testSessionGuid && feedback.CreatedStressMeassurementDate > testStartTime && feedback.CreatedStressMeassurementDate > testEndTime;
+
+        _mockRepository.Setup(repo => repo.GetAll(It.IsAny<Expression<Func<Feedback, bool>>>()))
+            // _mockRepository.Setup(repo => repo.GetAll())
+            .ReturnsAsync(GetEmptyFeedbacks());
+        var service = new FeedbackService(_mockRepository.Object);
+
+        // Act
+        var result = service.GetPatientFeedbackByTimeSpan(testSessionGuid, testStartTime, testEndTime);
+
+        // Assert
+        var task = Assert.IsType<Task<IEnumerable<FeedbackDto>>>(result);
+        Assert.Empty(task.Result);
+    }
+    
+    
+    
     // Create a Feedback for specific Patient and checks if a new feedback has been created- Happy Flow 
     [Fact]
     public void CreateFeedback_ReturnsNewlyCreatedFeedback()
@@ -138,7 +196,8 @@ public class FeedbackServiceTests
 
         CreateFeedbackDto createIssueDto = new CreateFeedbackDto(new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0DEF"), 
                                                                     new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0AAA"), 
-                                                                    new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0BBB"), 
+                                                                    new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0BBB"),
+                                                                    new DateTimeOffset(2008, 5, 1, 8, 6, 32,new TimeSpan(1, 0, 0)),
                                                                     "Lorem Ipsum");
 
         // Act
@@ -149,6 +208,8 @@ public class FeedbackServiceTests
         var feedback = task.Result;
         Assert.Equal("Lorem Ipsum", feedback.Comment);
     }
+    
+    
 
     // Updates a Feedback for specific Patient - Happy Flow 
     [Fact]
@@ -161,7 +222,8 @@ public class FeedbackServiceTests
         
         var service = new FeedbackService(_mockRepository.Object);
         UpdateFeedbackDto updateFeedback = new UpdateFeedbackDto(new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0DEF"), 
-            new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0789"), new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0000"), 
+            new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0789"), new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0000"),
+            new DateTimeOffset(2008, 5, 1, 8, 6, 32,new TimeSpan(1, 0, 0)),
             "Not Lorem Ipsum");
         
         // Act
@@ -183,7 +245,7 @@ public class FeedbackServiceTests
             .ReturnsAsync((Feedback) null!);
         var service = new FeedbackService(_mockRepository.Object);
         
-        UpdateFeedbackDto updateFeedbackDto = new UpdateFeedbackDto(new Guid(), new Guid(), new Guid(), 
+        UpdateFeedbackDto updateFeedbackDto = new UpdateFeedbackDto(new Guid(), new Guid(), new Guid(), new DateTimeOffset(), 
             "Not Lorem Ipsum");
         
         // Act
@@ -193,8 +255,10 @@ public class FeedbackServiceTests
         var task = Assert.IsType<Task<FeedbackDto>>(result);
         Assert.Null(task.Result);
     }
+    
+    
 
-    // Create a Feedback for specific Patient and checks if a new feedback has been created- Happy Flow 
+    // Delete a Feedback for specific Patient and checks if a new feedback has been created- Happy Flow 
     [Fact]
     public void DeleteFeedback_ReturnsNoContent()
     {
@@ -233,6 +297,8 @@ public class FeedbackServiceTests
         Assert.Null(task.Result);
     }
     
+    
+    
     private IReadOnlyCollection<Feedback> GetPatientFeedbacksById(Guid patientId)
     {
         List<Feedback> feedbacks = new List<Feedback>
@@ -244,7 +310,8 @@ public class FeedbackServiceTests
                 AuthorId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0789"), 
                 StressMeasurementId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0000"), 
                 Comment = "Hello World",
-                CreatedDate = DateTimeOffset.Now
+                CreatedStressMeassurementDate = new DateTimeOffset(2008, 5, 1, 8, 6, 32,new TimeSpan(1, 0, 0)),
+                CreatedCommentDate = DateTimeOffset.Now
             },
             new Feedback()
             {
@@ -253,7 +320,8 @@ public class FeedbackServiceTests
                 AuthorId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0AAA"), 
                 StressMeasurementId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0BBB"), 
                 Comment = "Lorem Ipsum",
-                CreatedDate = DateTimeOffset.Now
+                CreatedStressMeassurementDate = new DateTimeOffset(2008, 5, 1, 8, 6, 32,new TimeSpan(1, 0, 0)),
+                CreatedCommentDate = DateTimeOffset.Now
             }
         };
         return feedbacks;
@@ -268,7 +336,8 @@ public class FeedbackServiceTests
             AuthorId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0789"), 
             StressMeasurementId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0000"), 
             Comment = "Hello World",
-            CreatedDate = DateTimeOffset.Now
+            CreatedStressMeassurementDate = new DateTimeOffset(2008, 5, 1, 8, 6, 32,new TimeSpan(1, 0, 0)),
+            CreatedCommentDate = DateTimeOffset.Now
         };
     }
     
@@ -283,7 +352,8 @@ public class FeedbackServiceTests
                 AuthorId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0789"), 
                 StressMeasurementId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0000"), 
                 Comment = "Hello World",
-                CreatedDate = DateTimeOffset.Now
+                CreatedStressMeassurementDate = new DateTimeOffset(2008, 5, 1, 8, 6, 32,new TimeSpan(1, 0, 0)),
+                CreatedCommentDate = DateTimeOffset.Now
             },
             new Feedback()
             {
@@ -292,7 +362,8 @@ public class FeedbackServiceTests
                 AuthorId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0AAA"), 
                 StressMeasurementId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0BBB"), 
                 Comment = "Lorem Ipsum",
-                CreatedDate = DateTimeOffset.Now
+                CreatedStressMeassurementDate = new DateTimeOffset(2008, 6, 1, 8, 6, 32,new TimeSpan(1, 0, 0)),
+                CreatedCommentDate = DateTimeOffset.Now
             }
         };
 
@@ -316,7 +387,8 @@ public class FeedbackServiceTests
             AuthorId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0AAA"),
             StressMeasurementId = new Guid("62FA647C-AD54-4BCC-A860-E5A2664B0BBB"),
             Comment = "Lorem Ipsum",
-            CreatedDate = DateTimeOffset.Now
+            CreatedStressMeassurementDate = new DateTimeOffset(2008, 5, 1, 8, 6, 32,new TimeSpan(1, 0, 0)),
+            CreatedCommentDate = DateTimeOffset.Now
         };
     }
 }

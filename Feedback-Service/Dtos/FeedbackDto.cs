@@ -7,5 +7,5 @@ public record FeedbackDto(
     Guid StressMeassurementId,
     string? Comment,
     DateTimeOffset CreatedCommentDate,
-    DateTimeOffset CreatedStressMeassurementDate
+    DateTimeOffset CreatedStressMeasurementDate
 );

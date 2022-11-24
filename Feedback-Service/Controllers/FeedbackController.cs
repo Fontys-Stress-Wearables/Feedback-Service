@@ -45,9 +45,21 @@ public class FeedbackController : ControllerBase
     public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetPatientFeedbackById(Guid patientId)
     {
         var feedback = await _feedbackService.GetPatientFeedbackById(patientId);
-        
+
         return Ok(feedback);
     }
+
+    //GET /feedback/timespan/{patientId}
+    // retrieves all feedbacks from a specific patient based on their patient id and timespan
+    [HttpGet("timespan/{patientId}")]
+    public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetPatientFeedbackByTimeSpan(Guid patientId, DateTime startTime, DateTime endTime)
+    {
+        var feedback = await _feedbackService.GetPatientFeedbackByTimeSpan(patientId, startTime, endTime);
+
+        return Ok(feedback);
+    }
+
+
 
     //POST /feedback
     // created a feedback

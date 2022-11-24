@@ -9,12 +9,13 @@ public class Feedback
     public Guid AuthorId { get; set; }
     public Guid StressMeasurementId { get; set; }
     public string? Comment { get; set; }
-    public DateTimeOffset CreatedDate { get; set; }
+    public DateTimeOffset CreatedCommentDate { get; set; }
+    public DateTimeOffset CreatedStressMeasurementDate { get; set; }
 
     public FeedbackDto AsDto()
     {
         return new FeedbackDto(
-            Id, PatientId, AuthorId, StressMeasurementId, Comment, CreatedDate
+            Id, PatientId, AuthorId, StressMeasurementId, Comment, CreatedCommentDate, CreatedStressMeasurementDate
         );
     }
 }

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Feedback_Service.Dtos;
 using Feedback_Service.Interfaces;
 using Feedback_Service.Models;
@@ -38,6 +39,15 @@ public class FeedbackService : IFeedbackService
         return feedbackEntries;
     }
 
+    public async Task<IEnumerable<FeedbackDto>> GetPatientFeedbackByTimeSpan(Guid patientId, DateTime startTime, DateTime endTime)
+    {
+        Expression<Func<Feedback, bool>> filter = feedback => feedback.PatientId == patientId && feedback.CreatedStressMeassurementDate > startTime && feedback.CreatedStressMeassurementDate > endTime;
+
+        var feedback = (await feedbackRepository.GetAll(filter))
+                            .Select(feedback => feedback.AsDto()); ;
+        return feedback;
+    }
+
     public async Task<FeedbackDto?> CreateFeedback(CreateFeedbackDto createFeedbackDto)
     {
         var feedbackEntity = new Feedback
@@ -46,7 +56,8 @@ public class FeedbackService : IFeedbackService
             AuthorId = createFeedbackDto.AuthorId,
             StressMeasurementId = createFeedbackDto.StressMeasurementId,
             Comment = createFeedbackDto.Comment,
-            CreatedDate = DateTimeOffset.UtcNow
+            CreatedStressMeassurementDate = createFeedbackDto.CreatedStressMeassurementDate,
+            CreatedCommentDate = DateTimeOffset.UtcNow
         };
 
         await feedbackRepository.Create(feedbackEntity);
@@ -64,7 +75,8 @@ public class FeedbackService : IFeedbackService
         existingFeedback.AuthorId = updateFeedbackDto.AuthorId;
         existingFeedback.StressMeasurementId = updateFeedbackDto.StressMeasurementId;
         existingFeedback.Comment = updateFeedbackDto.Comment;
-        existingFeedback.CreatedDate = DateTimeOffset.UtcNow;
+        existingFeedback.CreatedStressMeassurementDate = updateFeedbackDto.CreatedStressMeassurementDate;
+        existingFeedback.CreatedCommentDate = DateTimeOffset.UtcNow;
 
         await feedbackRepository.Update(existingFeedback);
 

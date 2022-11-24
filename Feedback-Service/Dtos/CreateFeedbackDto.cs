@@ -8,5 +8,6 @@ public record CreateFeedbackDto
     [Required] Guid PatientId,
     [Required] Guid AuthorId,
     [Required] Guid StressMeasurementId,
+    [Required] DateTimeOffset CreatedStressMeassurementDate,
     [Required] string Comment
 );

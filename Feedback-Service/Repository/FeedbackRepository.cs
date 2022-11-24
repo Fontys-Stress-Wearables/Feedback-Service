@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Feedback_Service.Models;
 using MongoDB.Driver;
 
@@ -33,6 +34,11 @@ public class FeedbackRepository : IFeedbackRepository
     {
         //filter to find item based on id
         FilterDefinition<Feedback> filter = filterBuilder.Eq(entity => entity.PatientId, patientId);
+        return await dbCollection.Find(filter).ToListAsync();
+    }
+
+    public async Task<IReadOnlyCollection<Feedback>> GetAll(Expression<Func<Feedback, bool>> filter)
+    {
         return await dbCollection.Find(filter).ToListAsync();
     }
 

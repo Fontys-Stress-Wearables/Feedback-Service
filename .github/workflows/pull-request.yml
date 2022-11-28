@@ -22,6 +22,7 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore
+      working-directory: Feedback-Service
       
 #Builds a project and all of its dependencies
     - name: Build
@@ -32,7 +33,7 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
 
     - name: Publish
-      run: dotnet publish Issue-Service/Issue-Service.csproj -c Release -o release --nologo
+      run: dotnet publish Feedback-Service/Feedback-Service.csproj -c Release -o release --nologo
       
     - name: Persist workflow data as artifact
       uses: actions/upload-artifact@v3

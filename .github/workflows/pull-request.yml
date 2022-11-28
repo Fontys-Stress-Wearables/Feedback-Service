@@ -20,7 +20,6 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-#Restores the dependencies and tools of a project
     - name: Install dependencies
       run: dotnet restore
       

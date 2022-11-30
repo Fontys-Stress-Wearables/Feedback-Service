@@ -1,6 +1,10 @@
 name: Lint Code Base
-
-on: [ pull_request ]
+# Only trigger, when the build workflow succeeded
+on:
+  workflow_run:
+    workflows: ["Unit Tests"]
+    types:
+      - completed
 
 jobs:
   build:

@@ -36,6 +36,13 @@ jobs:
       with:
         name: feedback-artifact
         path: /home/runner/work/Feedback-Service/Feedback-Service/release/
+        
+    - name: Lint Code Base
+      uses: github/super-linter@v4
+      env:
+        VALIDATE_ALL_CODEBASE: false
+        DEFAULT_BRANCH: master
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   analyse:
     name: Unit Tests

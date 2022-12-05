@@ -6,7 +6,7 @@ on:
     branches: [main]
     tags: ['v*.*.*']
   pull_request: 
-    branches: [main, GitHub-Dependabot]
+    branches: [main]
     
 env: 
   REGISTRY: ghcr.io
@@ -16,7 +16,7 @@ env:
 jobs:
   build:
 
-    name: build-and-test-${{matrix.os}}
+    name: builds-${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

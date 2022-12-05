@@ -1,0 +1,117 @@
+name: feedback-service
+
+on:
+  # run it on push to the default repository branch
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  pull_request: 
+    branches: [main, GitHub-Dependabot]
+    
+env: 
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}  
+  DOTNET_VERSION: '6.0.402'
+
+jobs:
+  build:
+
+    name: build-and-test-${{matrix.os}}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dependencies
+      run: dotnet restore
+      working-directory: Feedback-Service
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+      working-directory: Feedback-Service
+
+    - name: Publish
+      run: dotnet publish Feedback-Service/Feedback-Service.csproj -c Release -o release --nologo
+        
+    - name: Lint Code Base
+      uses: github/super-linter@v4
+      env:
+        VALIDATE_ALL_CODEBASE: false
+        DEFAULT_BRANCH: master
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+    - name: Persist workflow data as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: feedback-artifact
+        path: /home/runner/work/Feedback-Service/Feedback-Service/release/
+
+  analyse:
+    name: Unit Tests
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download workflow data
+        uses: actions/download-artifact@v3
+        with:
+          name: feedback-artifact
+          path: /home/runner/work/Feedback-Service/Feedback-Service/release/
+      
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+        working-directory: Tests
+
+  # define job to build and publish docker image
+  build-and-push-docker-image:
+    name: Build Docker image and push to repository
+    # run only when code is compiling and tests are passing
+    runs-on: ubuntu-latest
+
+    # steps to perform in job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Registry
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract Docker Metadata
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build image and push
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          # relative path to the place where source code with Dockerfile is located
+          context: .
+          file: ./Feedback-Service/Dockerfile
+
+          # Note: tags has to be all lower-case
+          tags: ${{steps.meta.outputs.tags}}
+          labels: ${{steps.meta.output.labels}}
+
+          # build on feature branches, push only on master branch
+          push: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

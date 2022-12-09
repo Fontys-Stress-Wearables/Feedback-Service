@@ -47,7 +47,7 @@ jobs:
     - name: Persist workflow data as artifact
       uses: actions/upload-artifact@v3
       with:
-        name: feedback-artifact
+        name: feedback-cicd-artifact
         path: /home/runner/work/Feedback-Service/Feedback-Service/release/
 
   analyse:
@@ -61,7 +61,7 @@ jobs:
       - name: Download workflow data
         uses: actions/download-artifact@v3
         with:
-          name: feedback-artifact
+          name: feedback-cicd-artifact
           path: /home/runner/work/Feedback-Service/Feedback-Service/release/
       
       - name: Test

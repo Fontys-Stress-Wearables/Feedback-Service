@@ -1,13 +1,19 @@
-name: Pull Request
-on: [ pull_request ]
+name: ci-cd-flow
 
-env:
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+    
+env: 
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}  
   DOTNET_VERSION: '6.0.402'
 
 jobs:
   build:
 
-    name: build-${{matrix.os}}
+    name: builds-${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -41,7 +47,7 @@ jobs:
     - name: Persist workflow data as artifact
       uses: actions/upload-artifact@v3
       with:
-        name: feedback-artifact
+        name: feedback-cicd-artifact
         path: /home/runner/work/Feedback-Service/Feedback-Service/release/
 
   analyse:
@@ -55,7 +61,7 @@ jobs:
       - name: Download workflow data
         uses: actions/download-artifact@v3
         with:
-          name: feedback-artifact
+          name: feedback-cicd-artifact
           path: /home/runner/work/Feedback-Service/Feedback-Service/release/
       
       - name: Test
@@ -101,7 +107,7 @@ jobs:
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
-
+        
   sonarcloud:
     name: SonarCloud
     runs-on: windows-latest
@@ -148,3 +154,49 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"Fontys-Stress-Wearables_Feedback-Service" /o:"fontys-stress-wearables" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build Feedback-Service/Feedback-Service.csproj
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+  # define job to build and publish docker image
+  build-and-push-docker-image:
+    name: Build Docker image and push to repository
+    needs: [ analyse, sonarcloud, codeQL-analyse ]
+    # run only when code is compiling and tests are passing
+    runs-on: ubuntu-latest
+
+    # steps to perform in job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Registry
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract Docker Metadata
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build image and push
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          # relative path to the place where source code with Dockerfile is located
+          context: .
+          file: ./Feedback-Service/Dockerfile
+
+          # Note: tags has to be all lower-case
+          tags: ${{steps.meta.outputs.tags}}
+          labels: ${{steps.meta.output.labels}}
+
+          # build on feature branches, push only on master branch
+          push: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

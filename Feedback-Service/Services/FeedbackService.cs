@@ -41,7 +41,7 @@ public class FeedbackService : IFeedbackService
 
     public async Task<IEnumerable<FeedbackDto>> GetPatientFeedbackByTimeSpan(Guid patientId, DateTime startTime, DateTime endTime)
     {
-        Expression<Func<Feedback, bool>> filter = feedback => feedback.PatientId == patientId && feedback.CreatedStressMeasurementDate > startTime && feedback.CreatedStressMeasurementDate > endTime;
+        Expression<Func<Feedback, bool>> filter = feedback => feedback.PatientId == patientId && feedback.CreatedStressMeasurementDate > startTime && feedback.CreatedStressMeasurementDate < endTime;
 
         var feedback = (await feedbackRepository.GetAll(filter))
                             .Select(feedback => feedback.AsDto()); ;

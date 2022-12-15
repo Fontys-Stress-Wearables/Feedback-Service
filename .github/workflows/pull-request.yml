@@ -48,8 +48,8 @@ jobs:
       - name: Download workflow data
         uses: actions/download-artifact@v3
         with:
-          name: patient-group-artifact
-          path: /home/runner/work/Patient-Group-Service/Patient-Group-Service/release/
+          name: feedback-artifact
+          path: /home/runner/work/Feedback-Service/Feedback-Service/release/
 
       - name: Run linters
         uses: wearerequired/lint-action@v2
@@ -65,7 +65,7 @@ jobs:
 
   analyse:
     name: Unit Tests
-    needs: [ build ]
+    needs: [ run-linters ]
     runs-on: ubuntu-latest
     
     steps:

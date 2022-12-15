@@ -30,6 +30,12 @@ jobs:
 
     - name: Publish
       run: dotnet publish Feedback-Service/Feedback-Service.csproj -c Release -o release --nologo
+
+    - name: Run linters
+      uses: wearerequired/lint-action@v2
+      with:
+        auto_fix: true
+        dotnet_format: true
       
     - name: Persist workflow data as artifact
       uses: actions/upload-artifact@v3
@@ -37,35 +43,36 @@ jobs:
         name: feedback-artifact
         path: /home/runner/work/Feedback-Service/Feedback-Service/release/
 
-  run-linters:
-    name: Run linters
-    needs: [ build ]
-    runs-on: ubuntu-latest
+#   run-linters:
+#     name: Run linters
+#     needs: [ build ]
+#     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v3
+#     steps:
+#       - uses: actions/checkout@v3
 
-      - name: Download workflow data
-        uses: actions/download-artifact@v3
-        with:
-          name: feedback-artifact
-          path: /home/runner/work/Feedback-Service/Feedback-Service/release/
+#       - name: Download workflow data
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: feedback-artifact
+#           path: /home/runner/work/Feedback-Service/Feedback-Service/release/
 
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          auto_fix: true
-          dotnet_format: true
+#       - name: Run linters
+#         uses: wearerequired/lint-action@v2
+#         with:
+#           auto_fix: true
+#           dotnet_format: true
 
-      - name: Persist workflow data as artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: feedback-artifact
-          path: /home/runner/work/Feedback-Service/Feedback-Service/release/
+#       - name: Persist workflow data as artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: feedback-artifact
+#           path: /home/runner/work/Feedback-Service/Feedback-Service/release/
 
   analyse:
     name: Unit Tests
-    needs: [ run-linters ]
+    needs: [ build ]
+#     needs: [ run-linters ]
     runs-on: ubuntu-latest
     
     steps:

@@ -23,24 +23,31 @@ This readme file will cover the endpoints of the service, running the service wi
 ## Build steps for running service on Docker
 The build steps for running the service with the mongo database on Docker. 
 
-(image of mongo command)
+![Uploading mongo-command.PNG…]()
+
 1. Pull the mongo image from docker with the assigned port and volume to store data with using the following command "Docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db mongo"
 
   - p: to reach the mongodb container we set the external and internal port to 27017.
   - v: the volumes specify how we will be storing the mongodb database files.
-  - 
-(image of docker ps)
+ 
+![docker-ps](https://user-images.githubusercontent.com/78371221/211282275-7c3c9c75-3d08-4c8b-b0d7-964865bc2bec.png)
 
 2. Confirm that the docker image is being used "docker ps"
+
+
 3. Pull the project from GitHub on your device in the IDE you are working with. (I will be using Visual Studio Code)
 
 <img width="960" alt="Screenshot (1407)" src="https://user-images.githubusercontent.com/78371221/209117837-4cff223b-bf0f-41cc-b64c-ce6a9427d196.png">
+
 4.  Build the project in the IDE of choice. 
 
+
 ![image](https://user-images.githubusercontent.com/78371221/209118659-a9604324-0d54-4647-a63b-67d3fd3fefe1.png)
+
 5.  The project is now running locally and should be able to be found at https://localhost:7034. 
 
 ![Screenshot (1414)](https://user-images.githubusercontent.com/78371221/209119018-271e6929-beca-44ba-b4fc-5994f98d4f6b.png)
+
 6.  To be able to see the endpoints we can use Swagger by adding "/swagger/index.html" to the url. Example "https://localhost:7034/swagger/index.html" as shown in image
 
 

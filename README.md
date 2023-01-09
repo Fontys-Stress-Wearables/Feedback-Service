@@ -46,7 +46,7 @@ The build steps for running the service with the mongo database on Docker.
 4.  Build the project in the IDE of choice. 
 
 
-![image](https://user-images.githubusercontent.com/78371221/209118659-a9604324-0d54-4647-a63b-67d3fd3fefe1.png)
+![locally (2)](https://user-images.githubusercontent.com/78371221/211284833-337b75ba-39f6-49d4-8f73-6e2aa9e5adee.png)
 <b><i>Image 5: Feedback service running locally</i></b>
  
 5.  The project is now running locally and should be able to be found at https://localhost:7034. 

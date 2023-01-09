@@ -23,7 +23,7 @@ This readme file will cover the endpoints of the service, running the service wi
 ## Build steps for running service on Docker
 The build steps for running the service with the mongo database on Docker. 
 
-![Uploading mongo-command.PNG…]()
+<img width="940" alt="mongo-command" src="https://user-images.githubusercontent.com/78371221/211282427-767ffabf-65bf-4e71-bfbb-f0fb5734d207.PNG">
 
 1. Pull the mongo image from docker with the assigned port and volume to store data with using the following command "Docker run -d --rm --name mongo -p 27017:27017 -v mongodbdata:/data/db mongo"
 
